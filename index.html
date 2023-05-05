@@ -3,13 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <title>Particle Swarm Visualizer</title>
-    <style>
-      body {
-        margin: 0;
-      }
-    </style>
+    <link href="./src/styles.css" rel="stylesheet">
   </head>
   <body>
-    <script type="module" src="/main.js"></script>
+    <div class="ml-4 mt-4 absolute bg-neutral-900 max-w-sm rounded overflow-hidden shadow-lg">
+      <div class="px-6 py-4">
+        <div class="text-white font-bold text-xl mb-2">Particle Swarm Optimization</div>
+        <p class="text-slate-400 text-base">
+          Select starting parameters from the Controls box, then click <strong>Run PSO</strong> to start the algorithm and watch the animation at each iteration.
+        </p>
+        <button class="mt-8 bg-cyan-700 hover:bg-cyan-900 text-white font-bold py-2 px-4 rounded" id="button-run-pso">Run PSO</button>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+    <script type="module" scr="/src/graph.js"></script>
   </body>
 </html>
