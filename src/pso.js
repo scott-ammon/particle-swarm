@@ -1,4 +1,7 @@
 // Particle Swarm Optimization Algorithm
+// This is a simple hardcoded implementation for a specific function to minimize,
+// it could be generalized to take in a function with n-parameters
+
 
 const minBound = 0;
 const maxBound = 5;
@@ -13,7 +16,7 @@ let personalBest = [];
 let globalBest = [];
 let velocities = [];
 
-// The function we are trying to minimize
+// The objective function we are trying to minimize
 export const fitness = (x, y) => {
   return (
     Math.pow(x - Math.PI, 2) +
@@ -68,13 +71,21 @@ export function* runPso(
     const printY = Math.round(globalBest[1] * precision) / precision;
     const printZ = Math.round(fitness(...globalBest) * precision) / precision;
 
+    // Update the UI on each iteration with global best position
     document.getElementById("iteration").firstChild.nodeValue = iteration;
     document.getElementById(
       "globalBestValues"
     ).firstChild.nodeValue = `X: ${printX} Y: ${printY} Z: ${printZ}`;
+
+    // return current iteration's population from the generator func
     yield population;
+
     population.forEach((particle, particleIndex) => {
-      particle.forEach((dimension, dimensionIndex) => {
+      for (
+        let dimensionIndex = 0;
+        dimensionIndex < particle.length;
+        dimensionIndex++
+      ) {
         const rP = Math.random();
         const rG = Math.random();
         // update particle velocity
@@ -88,20 +99,21 @@ export function* runPso(
 
         // update particle's position
         particle[dimensionIndex] += velocities[particleIndex][dimensionIndex];
-        // restrict particle's position to within the min and max bound
+        // restrict particle's position to within min/max bounds
         if (particle[dimensionIndex] > maxBound) {
           particle[dimensionIndex] = maxBound;
         } else if (particle[dimensionIndex] < minBound) {
           particle[dimensionIndex] = minBound;
         }
-      });
+      }
 
       // if fitness better than personal best, update personal best
       if (fitness(...particle) < fitness(...personalBest[particleIndex])) {
         personalBest[particleIndex] = [...particle];
         // if fitness is better than global best, update global best
         if (fitness(...particle) < fitness(...globalBest)) {
-          // set stop condition
+          // if earlyStop is set in the UI, kill while loop if solution
+          // at prev & curr iteration differs by less than the stopThreshold we set
           if (
             Math.abs(globalBest[0] - particle[0]) < stopThreshold &&
             Math.abs(globalBest[1] - particle[1]) < stopThreshold
@@ -116,6 +128,6 @@ export function* runPso(
     });
 
     iteration++;
-    w *= k; // inertial decrement
+    w *= k; // inertial decrement applied to the weight at each iteration
   }
 }
