@@ -1,13 +1,12 @@
 // Particle Swarm Optimization Algorithm
 
-const minX = 0;
-const maxX = 5;
-const minY = 0;
-const maxY = 5;
+const minBound = 0;
+const maxBound = 5;
 const minVelocity = -1;
 const maxVelocity = 1;
-let stopThreshold = 0.0001;
+let stopThreshold = 0.001;
 let stop = false;
+let iteration = 0;
 
 let population = [];
 let personalBest = [];
@@ -31,8 +30,8 @@ const getRandomInRange = (min, max) => {
 // Initialize the particles of the population and set personal & global bests
 const init = (populationSize) => {
   for (let i = 0; i < populationSize; i++) {
-    const x = getRandomInRange(minX, maxX);
-    const y = getRandomInRange(minY, maxY);
+    const x = getRandomInRange(minBound, maxBound);
+    const y = getRandomInRange(minBound, maxBound);
 
     population[i] = [x, y];
     personalBest[i] = [x, y];
@@ -52,8 +51,6 @@ const init = (populationSize) => {
   }
 };
 
-let iteration = 0;
-
 export function* runPso(
   populationSize,
   maxIterations,
@@ -64,9 +61,17 @@ export function* runPso(
   earlyStop
 ) {
   init(populationSize);
-  console.log("started with", populationSize, maxIterations, w, cP, cG, k);
 
   while (!stop && iteration <= maxIterations) {
+    const precision = 10000;
+    const printX = Math.round(globalBest[0] * precision) / precision;
+    const printY = Math.round(globalBest[1] * precision) / precision;
+    const printZ = Math.round(fitness(...globalBest) * precision) / precision;
+
+    document.getElementById("iteration").firstChild.nodeValue = iteration;
+    document.getElementById(
+      "globalBestValues"
+    ).firstChild.nodeValue = `X: ${printX} Y: ${printY} Z: ${printZ}`;
     yield population;
     population.forEach((particle, particleIndex) => {
       particle.forEach((dimension, dimensionIndex) => {
@@ -83,6 +88,12 @@ export function* runPso(
 
         // update particle's position
         particle[dimensionIndex] += velocities[particleIndex][dimensionIndex];
+        // restrict particle's position to within the min and max bound
+        if (particle[dimensionIndex] > maxBound) {
+          particle[dimensionIndex] = maxBound;
+        } else if (particle[dimensionIndex] < minBound) {
+          particle[dimensionIndex] = minBound;
+        }
       });
 
       // if fitness better than personal best, update personal best
@@ -104,18 +115,6 @@ export function* runPso(
       }
     });
 
-    const precision = 10000;
-    console.log(
-      "Solution at iteration",
-      iteration,
-      "is",
-      "x:",
-      Math.round(globalBest[0] * precision) / precision,
-      "y:",
-      Math.round(globalBest[1] * precision) / precision,
-      "z:",
-      Math.round((fitness(...globalBest) * precision) / precision)
-    );
     iteration++;
     w *= k; // inertial decrement
   }

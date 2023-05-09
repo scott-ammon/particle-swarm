@@ -4,7 +4,6 @@ import { ParametricGeometry } from "three/addons/geometries/ParametricGeometry.j
 import { GUI } from "three/addons/libs/lil-gui.module.min.js";
 import { fitness, runPso } from "./pso";
 
-// Scene and renderer set up
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer();
 scene.background = new THREE.Color("black");
@@ -12,16 +11,15 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
-// Camera and light settings
 const camera = new THREE.PerspectiveCamera(
   25,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
-camera.position.x = 25;
-camera.position.y = 25;
-camera.position.z = 25;
+camera.position.x = 15;
+camera.position.y = 15;
+camera.position.z = 15;
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -31,11 +29,10 @@ window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Graph axes
 const axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
 
-// GUI for providing inputs to PSO
+// GUI for providing inputs to the PSO func
 const gui = new GUI();
 const guiNode = {
   populationSize: 100,
@@ -58,10 +55,11 @@ gui.add(guiNode, "earlyStop");
 gui.open();
 
 // Geometry of function to minimize
+const scaleFactor = 0.2; // z values are too large, so we scale down to make it visually work
 const shapeDefinition = function (v, u, target) {
   const x = u * 5;
   const y = v * 5;
-  const z = fitness(x, y) / 5;
+  const z = fitness(x, y) * scaleFactor;
 
   target.set(y, z, x); // flipping axes to visualize better since default is z perp to screen
 };
@@ -103,12 +101,14 @@ export const startSimulation = () => {
         color: 0xffffff,
       });
       const sphere = new THREE.Mesh(sphereGeom, sphereMaterial);
-      sphere.position.x = currentPositions[i][1];
-      sphere.position.y = fitness(
-        currentPositions[i][0],
-        currentPositions[i][1]
+      const startingLocation = new THREE.Vector3(
+        currentPositions[i][1],
+        fitness(currentPositions[i][0], currentPositions[i][1]) * scaleFactor,
+        currentPositions[i][0]
       );
-      sphere.position.z = currentPositions[i][0];
+      sphere.position.x = startingLocation.x;
+      sphere.position.y = startingLocation.y;
+      sphere.position.z = startingLocation.z;
       sphereMap[sphere.uuid] = sphere;
 
       scene.add(sphere);
@@ -130,7 +130,7 @@ export const startSimulation = () => {
     Object.keys(sphereMap).forEach((sphere, i) => {
       const newLocation = new THREE.Vector3(
         currentPositions[i][1],
-        fitness(currentPositions[i][0], currentPositions[i][1]) / 5,
+        fitness(currentPositions[i][0], currentPositions[i][1]) * scaleFactor,
         currentPositions[i][0]
       );
       sphereMap[sphere].position.lerp(newLocation, 0.03);
