@@ -2,7 +2,6 @@
 // This is a simple hardcoded implementation for a specific function to minimize,
 // it could be generalized to take in a function with n-parameters
 
-
 const minBound = 0;
 const maxBound = 5;
 const minVelocity = -1;
@@ -17,21 +16,21 @@ let globalBest = [];
 let velocities = [];
 
 // The objective function we are trying to minimize
-export const fitness = (x, y) => {
-  return (
-    Math.pow(x - Math.PI, 2) +
-    Math.pow(y - 2.72, 2) +
-    Math.sin(3 * x + 1.41) +
-    Math.sin(4 * y - 1.73)
-  );
-};
+// export const fitness = (x, y) => {
+//   return (
+//     Math.pow(x - Math.PI, 2) +
+//     Math.pow(y - 2.72, 2) +
+//     Math.sin(3 * x + 1.41) +
+//     Math.sin(4 * y - 1.73)
+//   );
+// };
 
 const getRandomInRange = (min, max) => {
   return Math.random() * (max - min) + min;
 };
 
 // Initialize the particles of the population and set personal & global bests
-const init = (populationSize) => {
+const init = (populationSize, fitness) => {
   for (let i = 0; i < populationSize; i++) {
     const x = getRandomInRange(minBound, maxBound);
     const y = getRandomInRange(minBound, maxBound);
@@ -55,6 +54,7 @@ const init = (populationSize) => {
 };
 
 export function* runPso(
+  fitness,
   populationSize,
   maxIterations,
   w,
@@ -63,7 +63,7 @@ export function* runPso(
   k,
   earlyStop
 ) {
-  init(populationSize);
+  init(populationSize, fitness);
 
   while (!stop && iteration <= maxIterations) {
     const precision = 10000;
