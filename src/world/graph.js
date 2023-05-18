@@ -16,7 +16,6 @@ export default class Graph {
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.container = document.body;
     this.container.appendChild(this.renderer.domElement);
-    new Resizer(this.container, this.camera, this.renderer);
 
     this.camera = createCamera();
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -28,6 +27,8 @@ export default class Graph {
     this.currentPositions;
     this.result;
     this.sphereMap = {};
+
+    new Resizer(this.container, this.camera, this.renderer);
 
     this.setGraph(equation);
   }
@@ -45,16 +46,7 @@ export default class Graph {
 
   startSimulation = () => {
     if (!this.result) {
-      this.result = runPso(
-        this.fitness,
-        this.guiNode.populationSize,
-        this.guiNode.maxIterations,
-        this.guiNode.weight,
-        this.guiNode.cPersonal,
-        this.guiNode.cGlobal,
-        this.guiNode.inertialDecrement,
-        this.guiNode.earlyStop
-      );
+      this.result = runPso(this.fitness, this.guiNode);
       this.currentPositions = this.result.next().value;
 
       for (let i = 0; i < this.currentPositions.length; i++) {

@@ -43,16 +43,17 @@ const init = (populationSize, fitness) => {
   }
 };
 
-export function* runPso(
-  fitness,
-  populationSize,
-  maxIterations,
-  w,
-  cP,
-  cG,
-  k,
-  earlyStop
-) {
+export function* runPso(fitness, options) {
+  let {
+    populationSize,
+    maxIterations,
+    weight,
+    cPersonal,
+    cGlobal,
+    inertialDecrement,
+    earlyStop,
+  } = options;
+
   init(populationSize, fitness);
 
   while (!stop && iteration <= maxIterations) {
@@ -80,12 +81,14 @@ export function* runPso(
         const rG = Math.random();
         // update particle velocity
         velocities[particleIndex][dimensionIndex] =
-          w +
-          cP *
+          weight +
+          cPersonal *
             rP *
             (personalBest[particleIndex][dimensionIndex] -
               particle[dimensionIndex]) +
-          cG * rG * (globalBest[dimensionIndex] - particle[dimensionIndex]);
+          cGlobal *
+            rG *
+            (globalBest[dimensionIndex] - particle[dimensionIndex]);
 
         // update particle's position
         particle[dimensionIndex] += velocities[particleIndex][dimensionIndex];
@@ -118,6 +121,6 @@ export function* runPso(
     });
 
     iteration++;
-    w *= k; // inertial decrement applied to the weight at each iteration
+    weight *= inertialDecrement; // inertial decrement applied to the weight at each iteration
   }
 }
