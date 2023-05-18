@@ -15,16 +15,6 @@ let personalBest = [];
 let globalBest = [];
 let velocities = [];
 
-// The objective function we are trying to minimize
-// export const fitness = (x, y) => {
-//   return (
-//     Math.pow(x - Math.PI, 2) +
-//     Math.pow(y - 2.72, 2) +
-//     Math.sin(3 * x + 1.41) +
-//     Math.sin(4 * y - 1.73)
-//   );
-// };
-
 const getRandomInRange = (min, max) => {
   return Math.random() * (max - min) + min;
 };

@@ -1,6 +1,6 @@
-import Graph from "./graph.js";
+import Graph from "./world/graph.js";
 
-// Equations to allow user to test
+// Equations to select from dropdown
 export const exampleEquations = [
   (x, y) => {
     return (
@@ -14,11 +14,9 @@ export const exampleEquations = [
     return Math.pow(x, 2) + Math.pow(y, 2);
   },
 ];
-
 export let selectedEquation = 0;
 
 const graphObj = new Graph(exampleEquations[selectedEquation]);
-graphObj.setGraph(exampleEquations[selectedEquation])
 graphObj.animate();
 
 const runButton = document.getElementById("button-run-pso");
@@ -27,10 +25,4 @@ runButton.addEventListener("click", graphObj.startSimulation);
 const dropdown = document.getElementById("select-equation");
 dropdown.addEventListener("change", function () {
   graphObj.setGraph(exampleEquations[this.value]);
-});
-
-export const fitness = exampleEquations[selectedEquation];
-
-document.addEventListener("DOMContentLoaded", () => {
-  // graphObj.animate();
 });

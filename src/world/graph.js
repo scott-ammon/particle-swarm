@@ -1,95 +1,46 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { ParametricGeometry } from "three/addons/geometries/ParametricGeometry.js";
-import { GUI } from "three/addons/libs/lil-gui.module.min.js";
-import { runPso } from "./pso";
+import { runPso } from "../pso";
+import { createCamera } from "./camera";
+import { getGuiNode } from "./gui";
+import { getMesh } from "./mesh";
+import Resizer from "./resizer";
 
 export default class Graph {
-  constructor(fitness) {
-    this.fitness = fitness;
+  constructor(equation) {
+    this.fitness;
     this.scene = new THREE.Scene();
     this.renderer = new THREE.WebGLRenderer();
     this.scene.background = new THREE.Color("black");
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    document.body.appendChild(this.renderer.domElement);
+    this.container = document.body;
+    this.container.appendChild(this.renderer.domElement);
+    new Resizer(this.container, this.camera, this.renderer);
 
-    this.camera = new THREE.PerspectiveCamera(
-      25,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    this.camera.position.x = 15;
-    this.camera.position.y = 15;
-    this.camera.position.z = 15;
-
+    this.camera = createCamera(this.renderer);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-
-    window.addEventListener("resize", () => {
-      this.camera.aspect = window.innerWidth / window.innerHeight;
-      this.camera.updateProjectionMatrix();
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
     this.axesHelper = new THREE.AxesHelper(5);
     this.scene.add(this.axesHelper);
 
-    // GUI for providing inputs to the PSO func
-    this.gui = new GUI();
-    this.guiNode = {
-      populationSize: 100,
-      maxIterations: 25,
-      weight: 1,
-      cPersonal: 1.5,
-      cGlobal: 1.5,
-      inertialDecrement: 0.3,
-      earlyStop: false,
-    };
-    this.gui.add(this.guiNode, "populationSize", 10, 1000).step(1);
-    this.gui.add(this.guiNode, "maxIterations", 1, 50).step(1);
-    this.gui.add(this.guiNode, "weight", 0, 3).step(0.1);
-    this.gui.add(this.guiNode, "cPersonal", 0.5, 2.5).step(0.1);
-    this.gui.add(this.guiNode, "cGlobal", 0.5, 2.5).step(0.1);
-    this.gui.add(this.guiNode, "inertialDecrement", 0.1, 0.9).step(0.1);
-    this.gui.add(this.guiNode, "earlyStop");
-    this.gui.open();
+    this.guiNode = getGuiNode();
 
     this.currentPositions;
     this.result;
     this.sphereMap = {};
+
+    this.setGraph(equation);
   }
 
   setGraph(fitness) {
     // remove the previous example graph surface (but leave axes helper in place)
     this.scene.remove(this.scene.children[1]);
     this.fitness = fitness;
+    this.zScaleFactor = 0.2; // z valuesx are too large, so we scale down to make it visually work
 
-    // Geometry of function to minimize
-    this.scaleFactor = 0.2; // z valuesx are too large, so we scale down to make it visually work
-    this.shapeDefinition = (v, u, target) => {
-      const x = u * 5;
-      const y = v * 5;
-      const z = this.fitness(x, y) * this.scaleFactor;
+    const mesh = getMesh(this.fitness, this.zScaleFactor);
 
-      target.set(y, z, x); // flipping axes to visualize better since default is z perp to screen
-    };
-
-    this.geometry = new ParametricGeometry(this.shapeDefinition, 100, 100);
-    this.material = new THREE.MeshBasicMaterial({
-      color: 0x000000,
-      side: THREE.DoubleSide,
-    });
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.scene.add(this.mesh);
-
-    this.wireframeGeometry = new THREE.WireframeGeometry(this.geometry);
-    this.wireframeMaterial = new THREE.LineBasicMaterial({ color: 0x1ce1f2 });
-    this.wireframe = new THREE.LineSegments(
-      this.wireframeGeometry,
-      this.wireframeMaterial
-    );
-    this.mesh.add(this.wireframe);
+    this.scene.add(mesh);
   }
 
   startSimulation = () => {
@@ -117,7 +68,7 @@ export default class Graph {
           this.fitness(
             this.currentPositions[i][0],
             this.currentPositions[i][1]
-          ) * this.scaleFactor,
+          ) * this.zScaleFactor,
           this.currentPositions[i][0]
         );
         sphere.position.x = startingLocation.x;
@@ -145,7 +96,7 @@ export default class Graph {
           this.fitness(
             this.currentPositions[i][0],
             this.currentPositions[i][1]
-          ) * this.scaleFactor,
+          ) * this.zScaleFactor,
           this.currentPositions[i][0]
         );
         this.sphereMap[sphere].position.lerp(newLocation, 0.03);
