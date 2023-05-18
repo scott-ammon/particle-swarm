@@ -18,7 +18,7 @@ export default class Graph {
     this.container.appendChild(this.renderer.domElement);
     new Resizer(this.container, this.camera, this.renderer);
 
-    this.camera = createCamera(this.renderer);
+    this.camera = createCamera();
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.axesHelper = new THREE.AxesHelper(5);
     this.scene.add(this.axesHelper);

@@ -1,6 +1,6 @@
 import { PerspectiveCamera } from "three";
 
-export const createCamera = (renderer) => {
+export const createCamera = () => {
   const camera = new PerspectiveCamera(
     25,
     window.innerWidth / window.innerHeight,
