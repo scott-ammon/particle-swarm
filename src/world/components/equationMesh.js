@@ -1,4 +1,5 @@
 import {
+  AxesHelper,
   DoubleSide,
   LineBasicMaterial,
   LineSegments,
@@ -7,6 +8,7 @@ import {
   WireframeGeometry,
 } from "three";
 import { ParametricGeometry } from "three/addons/geometries/ParametricGeometry.js";
+import { rotateObjectInScene } from "../helpers/rotateScene";
 
 export const getMesh = (fitness, zScaleFactor) => {
   const shapeDefinition = (u, v, target) => {
@@ -31,6 +33,11 @@ export const getMesh = (fitness, zScaleFactor) => {
   const wireframe = new LineSegments(wireframeGeometry, wireframeMaterial);
 
   mesh.add(wireframe);
+  mesh.name = "equation-surface";
+
+  const axesHelper = new AxesHelper(5);
+  // rotateObjectInScene(axesHelper);
+  mesh.add(axesHelper);
 
   return mesh;
 };
