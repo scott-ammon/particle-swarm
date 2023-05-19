@@ -1,4 +1,4 @@
-import Graph from "./world/graph.js";
+import Graph from "./world/root.js";
 
 // Equations to select from dropdown
 export const exampleEquations = [
