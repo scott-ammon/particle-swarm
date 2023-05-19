@@ -9,17 +9,17 @@ import {
 import { ParametricGeometry } from "three/addons/geometries/ParametricGeometry.js";
 
 export const getMesh = (fitness, zScaleFactor) => {
-  const shapeDefinition = (v, u, target) => {
+  const shapeDefinition = (u, v, target) => {
     const x = u * 5;
     const y = v * 5;
     const z = fitness(x, y) * zScaleFactor;
 
-    target.set(y, z, x); // flipping axes to visualize better since default is z perp to screen
+    target.set(x, y, z);
   };
 
   const geometry = new ParametricGeometry(shapeDefinition, 100, 100);
   const material = new MeshBasicMaterial({
-    color: 0xff0000,
+    color: 0x000000,
     side: DoubleSide,
     transparent: true,
     opacity: 0,
