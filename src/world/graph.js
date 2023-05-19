@@ -1,4 +1,4 @@
-import { Scene, WebGLRenderer, AxesHelper, Color, Vector3 } from "three";
+import { AxesHelper, Color, Group, Scene, Vector3, WebGLRenderer } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { runPso } from "../pso";
 import { createCamera } from "./components/camera";
@@ -31,7 +31,7 @@ export default class Graph {
 
     this.currentPositions;
     this.result;
-    this.particleMap = {};
+    this.particleGroup = new Group();
 
     new Resizer(this.container, this.camera, this.renderer);
 
@@ -56,11 +56,17 @@ export default class Graph {
       this.currentPositions = this.result.next().value;
 
       this.currentPositions.forEach((position) => {
-        const particle = createParticle(position, this.fitness, this.zScaleFactor);
+        const particle = createParticle(
+          position,
+          this.fitness,
+          this.zScaleFactor
+        );
 
-        this.particleMap[particle.uuid] = particle;
-        this.scene.add(particle);
+        this.particleGroup.add(particle);
       });
+
+      rotateObjectInScene(this.particleGroup);
+      this.scene.add(this.particleGroup);
 
       setInterval(() => {
         if (this.result !== undefined) {
@@ -72,16 +78,13 @@ export default class Graph {
 
   animate = () => {
     if (this.currentPositions) {
-      Object.keys(this.particleMap).forEach((sphere, i) => {
+      this.currentPositions.forEach((position, i) => {
         const newLocation = new Vector3(
-          this.currentPositions[i][1],
-          this.fitness(
-            this.currentPositions[i][0],
-            this.currentPositions[i][1]
-          ) * this.zScaleFactor,
-          this.currentPositions[i][0]
+          position[0],
+          position[1],
+          this.fitness(position[0], position[1]) * this.zScaleFactor
         );
-        this.particleMap[sphere].position.lerp(newLocation, 0.03);
+        this.particleGroup.children[i].position.lerp(newLocation, 0.03);
       });
     }
 
