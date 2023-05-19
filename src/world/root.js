@@ -37,7 +37,6 @@ export default class Graph {
     this.fitness = fitness;
 
     const mesh = getMesh(this.fitness, this.zScaleFactor);
-    rotateObjectInScene(mesh);
     this.scene.add(mesh);
   }
 

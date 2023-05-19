@@ -33,11 +33,10 @@ export const getMesh = (fitness, zScaleFactor) => {
   const wireframe = new LineSegments(wireframeGeometry, wireframeMaterial);
 
   mesh.add(wireframe);
-  mesh.name = "equation-surface";
 
   const axesHelper = new AxesHelper(5);
-  // rotateObjectInScene(axesHelper);
   mesh.add(axesHelper);
+  rotateObjectInScene(mesh);
 
   return mesh;
 };
