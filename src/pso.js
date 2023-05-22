@@ -52,6 +52,7 @@ export function* runPso(fitness, options) {
     cGlobal,
     inertialDecrement,
     earlyStop,
+    zScaleFactor
   } = options;
 
   init(populationSize, fitness);
@@ -69,40 +70,32 @@ export function* runPso(fitness, options) {
     ).firstChild.nodeValue = `X: ${printX} Y: ${printY} Z: ${printZ}`;
 
     // return current iteration's population from the generator func
-    yield population;
+    const positions = population.map((particle) => [...particle, fitness(...particle) * zScaleFactor]);
+    yield positions;
 
-    population.forEach((particle, particleIndex) => {
-      for (
-        let dimensionIndex = 0;
-        dimensionIndex < particle.length;
-        dimensionIndex++
-      ) {
+    population.forEach((particle, i) => {
+      for (let d = 0; d < 2; d++) {
         const rP = Math.random();
         const rG = Math.random();
         // update particle velocity
-        velocities[particleIndex][dimensionIndex] =
+        velocities[i][d] =
           weight +
-          cPersonal *
-            rP *
-            (personalBest[particleIndex][dimensionIndex] -
-              particle[dimensionIndex]) +
-          cGlobal *
-            rG *
-            (globalBest[dimensionIndex] - particle[dimensionIndex]);
+          cPersonal * rP * (personalBest[i][d] - particle[d]) +
+          cGlobal * rG * (globalBest[d] - particle[d]);
 
         // update particle's position
-        particle[dimensionIndex] += velocities[particleIndex][dimensionIndex];
+        particle[d] += velocities[i][d];
         // restrict particle's position to within min/max bounds
-        if (particle[dimensionIndex] > maxBound) {
-          particle[dimensionIndex] = maxBound;
-        } else if (particle[dimensionIndex] < minBound) {
-          particle[dimensionIndex] = minBound;
+        if (particle[d] > maxBound) {
+          particle[d] = maxBound;
+        } else if (particle[d] < minBound) {
+          particle[d] = minBound;
         }
       }
 
       // if fitness better than personal best, update personal best
-      if (fitness(...particle) < fitness(...personalBest[particleIndex])) {
-        personalBest[particleIndex] = [...particle];
+      if (fitness(...particle) < fitness(...personalBest[i])) {
+        personalBest[i] = [...particle];
         // if fitness is better than global best, update global best
         if (fitness(...particle) < fitness(...globalBest)) {
           // if earlyStop is set in the UI, kill while loop if solution

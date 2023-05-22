@@ -10,7 +10,7 @@ import { rotateObjectInScene } from "./helpers/rotateScene";
 
 export default class Graph {
   constructor(equation) {
-    this.fitness;
+    this.equation;
     this.currentPositions;
     this.result;
     this.msBetweenIterations = 1000;
@@ -32,23 +32,26 @@ export default class Graph {
     this.setGraph(equation);
   }
 
-  setGraph(fitness) {
+  setGraph(equation) {
     this.scene.children.forEach((obj) => this.scene.remove(obj));
-    this.fitness = fitness;
+    this.equation = equation;
 
-    const mesh = getMesh(this.fitness, this.zScaleFactor);
+    const mesh = getMesh(this.equation, this.zScaleFactor);
     this.scene.add(mesh);
   }
 
   startSimulation = () => {
     if (!this.result) {
-      this.result = runPso(this.fitness, this.guiNode);
+      this.result = runPso(this.equation, {
+        ...this.guiNode,
+        zScaleFactor: this.zScaleFactor,
+      });
       this.currentPositions = this.result.next().value;
 
       this.currentPositions.forEach((position) => {
         const particle = createParticle(
           position,
-          this.fitness,
+          this.equation,
           this.zScaleFactor
         );
 
@@ -69,11 +72,7 @@ export default class Graph {
   animate = () => {
     if (this.currentPositions) {
       this.currentPositions.forEach((position, i) => {
-        const newLocation = new Vector3(
-          position[0],
-          position[1],
-          this.fitness(position[0], position[1]) * this.zScaleFactor
-        );
+        const newLocation = new Vector3(...position);
         this.particleGroup.children[i].position.lerp(newLocation, 0.03);
       });
     }
