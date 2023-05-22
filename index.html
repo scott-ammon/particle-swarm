@@ -6,7 +6,7 @@
     <link href="./src/styles.css" rel="stylesheet" />
   </head>
   <body class="h-screen">
-    <div class="ml-4 absolute bg-neutral-900 max-w-md rounded shadow-lg">
+    <div class="ml-4 absolute bg-neutral-900 max-w-lg rounded shadow-lg">
       <div class="px-6 py-4">
         <div class="text-white font-bold text-xl mb-2">
           Particle Swarm Optimization
@@ -17,28 +17,55 @@
           animation at each iteration.
         </p>
         <button
-          class="mt-4 bg-slate-700 hover:bg-cyan-900 text-white font-bold py-2 px-4 rounded"
+          class="mt-4 bg-cyan-700 hover:bg-cyan-900 text-white font-bold py-2 px-4 rounded disabled:bg-gray-700"
           id="button-run-pso"
         >
           Run PSO
         </button>
+        <button
+          class="ml-4 text-white font-bold py-2 px-4 bg-red-500 rounded invisible"
+          id="button-reset"
+        >
+          Reset
+        </button>
         <p class="text-slate-300 mt-4">Equation to solve:</p>
-        <select name="equation" id="select-equation">
-          <option value="0">
-            <div class="text-slate-300 text-xs">
-              \[f(x, y) = (x - \pi)^2 + (y - e)^2 + sin(3x + 1.41) + sin(4y -
-              1.73)\]
-            </div>
-          </option>
-          <option value="1">
-            <div class="text-slate-300 text-xs">\[f(x, y) = x^2 + y^2\]</div>
-          </option>
-        </select>
-        <p class="text-slate-300 mt-4">
-          Solution at iteration <span id="iteration">-</span>
-        </p>
-        <div class="text-slate-300 text-sm pl-2" id="globalBestValues">
-          x: - y: - z: -
+        <input
+          type="radio"
+          id="eq-1"
+          name="select-equation"
+          value="0"
+          checked
+        />
+        <label for="eq-1"
+          ><span class="text-slate-300 text-xs">
+            \[f(x, y) = (x - \pi)^2 + (y - e)^2 + sin(3x + 1.41) + sin(4y -
+            1.73)\]
+          </span></label
+        ><br />
+        <input type="radio" id="eq-2" name="select-equation" value="1" />
+        <label for="eq-2"
+          ><span class="text-slate-300 text-xs"
+            >\[f(x, y) = x^2 + y^2\]</span
+          ></label
+        ><br />
+        <input type="radio" id="eq-3" name="select-equation" value="2" />
+        <label for="eq-3"
+          ><span class="text-slate-300 text-xs"
+            >\[f(x, y) = 10(sin(5x) * cos(5y))\]</span
+          ></label
+        ><br />
+        <input type="radio" id="eq-4" name="select-equation" value="3" />
+        <label for="eq-4"
+          ><span class="text-slate-300 text-xs"
+            >\[f(x, y) = sin(x^2 + y^2) * (x + y)\]</span
+          ></label
+        ><br />
+        <div class="bg-slate-700 rounded">
+          <p class="text-white font-bold mt-4 ml-2">Solution</p>
+          <p class="text-white ml-2">Iteration <span id="iteration">-</span></p>
+          <div class="text-white text-sm pl-2" id="globalBestValues">
+            x: - y: - z: -
+          </div>
         </div>
       </div>
     </div>

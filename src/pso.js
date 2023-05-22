@@ -67,7 +67,7 @@ export function* runPso(fitness, options) {
     document.getElementById("iteration").firstChild.nodeValue = iteration;
     document.getElementById(
       "globalBestValues"
-    ).firstChild.nodeValue = `X: ${printX} Y: ${printY} Z: ${printZ}`;
+    ).firstChild.nodeValue = `x: ${printX} y: ${printY} z: ${printZ}`;
 
     // return current iteration's population from the generator func
     const positions = population.map((particle) => [...particle, fitness(...particle) * zScaleFactor]);

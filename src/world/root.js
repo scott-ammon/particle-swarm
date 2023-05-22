@@ -12,7 +12,7 @@ export default class Graph {
   constructor(equation) {
     this.equation;
     this.currentPositions;
-    this.result;
+    // this.result;
     this.msBetweenIterations = 1000;
     this.zScaleFactor = 0.2;
     this.particleGroup = new Group();
@@ -41,32 +41,33 @@ export default class Graph {
   }
 
   startSimulation = () => {
-    if (!this.result) {
-      this.result = runPso(this.equation, {
-        ...this.guiNode,
-        zScaleFactor: this.zScaleFactor,
-      });
-      this.currentPositions = this.result.next().value;
+    const result = runPso(this.equation, {
+      ...this.guiNode,
+      zScaleFactor: this.zScaleFactor,
+    });
+    this.currentPositions = result.next().value;
 
-      this.currentPositions.forEach((position) => {
-        const particle = createParticle(
-          position,
-          this.equation,
-          this.zScaleFactor
-        );
+    this.currentPositions.forEach((position) => {
+      const particle = createParticle(
+        position,
+        this.equation,
+        this.zScaleFactor
+      );
 
-        this.particleGroup.add(particle);
-      });
+      this.particleGroup.add(particle);
+    });
 
-      rotateObjectInScene(this.particleGroup);
-      this.scene.add(this.particleGroup);
+    rotateObjectInScene(this.particleGroup);
+    this.scene.add(this.particleGroup);
 
-      setInterval(() => {
-        if (this.result !== undefined) {
-          this.currentPositions = this.result.next().value;
-        }
-      }, this.msBetweenIterations);
-    }
+    setInterval(() => {
+      if (result !== undefined) {
+        this.currentPositions = result.next().value;
+      }
+    }, this.msBetweenIterations);
+
+    document.getElementById("button-run-pso").disabled = true;
+    document.getElementById("button-reset").classList.remove("invisible");
   };
 
   animate = () => {
