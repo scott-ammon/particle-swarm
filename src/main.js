@@ -1,4 +1,4 @@
-import Graph from "./world/root.js";
+import Graph from "./world/graph.js";
 
 // Equations to select from
 export const exampleEquations = [
@@ -21,10 +21,18 @@ export const exampleEquations = [
   },
 ];
 
-export let selectedEquation = 0;
-
-const graphObj = new Graph(exampleEquations[selectedEquation]);
+const graphObj = new Graph(exampleEquations[0]);
 graphObj.animate();
+
+const radioButtons = document.querySelectorAll("input[type=radio]");
+Array.prototype.forEach.call(radioButtons, (radio) => {
+  radio.addEventListener("change", handleRadioChange);
+});
+
+function handleRadioChange() {
+  graphObj.scene.children.forEach((obj) => graphObj.scene.remove(obj));
+  graphObj.setGraph(exampleEquations[this.value]);
+}
 
 function runPso() {
   radioButtons.forEach((radio) => {
@@ -36,16 +44,12 @@ function runPso() {
 }
 
 const runButton = document.getElementById("button-run-pso");
-runButton.addEventListener("click", runPso, { once: true });
+runButton.addEventListener("click", runPso);
 
 const resetButton = document.getElementById("button-reset");
-resetButton.addEventListener("click", () => location.reload());
-
-function handleRadioChange() {
-  graphObj.setGraph(exampleEquations[this.value]);
-}
-
-const radioButtons = document.querySelectorAll("input[type=radio]");
-Array.prototype.forEach.call(radioButtons, (radio) => {
-  radio.addEventListener("change", handleRadioChange);
+resetButton.addEventListener("click", () => {
+  document.getElementById("button-run-pso").disabled = false;
+  document.getElementById("button-reset").classList.add("invisible");
+  radioButtons.forEach((radio) => (radio.disabled = false));
+  graphObj.resetPso();
 });

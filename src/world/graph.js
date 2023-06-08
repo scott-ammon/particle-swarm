@@ -1,6 +1,6 @@
 import { Color, Group, Scene, Vector3, WebGLRenderer } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { runPso } from "../pso";
+import PSO from "../pso";
 import { createCamera } from "./components/camera";
 import { getGuiNode } from "./components/gui";
 import { getMesh } from "./components/equationMesh";
@@ -10,12 +10,16 @@ import { rotateObjectInScene } from "./helpers/rotateScene";
 
 export default class Graph {
   constructor(equation) {
+    this.pso;
+    this.intervalId;
     this.equation;
     this.currentPositions;
-    // this.result;
     this.msBetweenIterations = 1000;
     this.zScaleFactor = 0.2;
     this.particleGroup = new Group();
+    rotateObjectInScene(this.particleGroup);
+    this.particleGroupName = "particleGroup";
+    this.particleGroup.name = this.particleGroupName;
     this.guiNode = getGuiNode();
 
     this.scene = new Scene();
@@ -32,6 +36,13 @@ export default class Graph {
     this.setGraph(equation);
   }
 
+  resetPso() {
+    this.pso = null;
+    this.currentPositions = null;
+    this.particleGroup.clear();
+    clearInterval(this.intervalId);
+  }
+
   setGraph(equation) {
     this.scene.children.forEach((obj) => this.scene.remove(obj));
     this.equation = equation;
@@ -41,7 +52,9 @@ export default class Graph {
   }
 
   startSimulation = () => {
-    const result = runPso(this.equation, {
+    this.pso = new PSO(this.guiNode.populationSize, this.equation);
+
+    const result = this.pso.runPso(this.equation, {
       ...this.guiNode,
       zScaleFactor: this.zScaleFactor,
     });
@@ -57,10 +70,9 @@ export default class Graph {
       this.particleGroup.add(particle);
     });
 
-    rotateObjectInScene(this.particleGroup);
     this.scene.add(this.particleGroup);
 
-    setInterval(() => {
+    this.intervalId = setInterval(() => {
       if (result !== undefined) {
         this.currentPositions = result.next().value;
       }
