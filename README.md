@@ -1,3 +1,7 @@
 # Particle Swarm Optimization with three.js
-Demo site I built to learn how to use three.js. Runs a particle swarm optimization algorithm to solve for the minimum of various equations. 
-All of the sample equations can be solved directly, without the need of an optimization algorithm - this was just a fun way to visualize the process in three dimensions.
+
+Visualization of a PSO algorithm solving for global minima of simple 3D surfaces. These examples are contrived, as they can be solved for directly, but this provides a fun way to visualize how a PSO algorithm uses a population of particles to collectively search multi-variate objective functions for minima/maxima.
+
+The visualization is generated using three.js, a JavaScript library that uses WebGL under the hood to generate 2D/3D graphics in the browser.
+
+![Particle Swarm Site Screenshot](pso_screenshot.png)
